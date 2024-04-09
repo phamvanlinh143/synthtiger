@@ -77,6 +77,7 @@ class Pad(Component):
                 margins = percents * np.tile((height, width), 2)
 
             top, right, bottom, left = margins
+            # print(margins)
             image = utils.pad_image(
                 image,
                 top=top,

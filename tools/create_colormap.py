@@ -10,7 +10,7 @@ import pprint
 import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
-
+import random
 import numpy as np
 import scipy.cluster
 from PIL import Image
@@ -70,6 +70,11 @@ def get_cluster(path, k, rgb=False):
 
 def run(args):
     paths = search_files(args.input, exts=[".jpg", ".jpeg", ".png", ".bmp"])
+    print(f"total paths = {len(paths)}")
+    random.shuffle(paths)
+    paths = paths[:200_000]
+    print(len(paths))
+    print(f"args.output = {args.output}")
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
     output_file = open(args.output, "w", encoding="utf-8")
     executor = ProcessPoolExecutor(max_workers=args.worker)
@@ -121,7 +126,7 @@ def parse_args():
         "--worker",
         metavar="NUM",
         type=int,
-        default=1,
+        default=4,
         help="Number of workers. [default: 1]",
     )
     parser.add_argument(

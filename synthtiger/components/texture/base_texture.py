@@ -95,6 +95,7 @@ class BaseTexture(Component):
             self._counts.append(len(paths))
 
     def _read_texture(self, path, grayscale=False):
+        # print(f"background path = {path}")
         texture = Image.open(path)
         texture = ImageOps.exif_transpose(texture)
         if grayscale:

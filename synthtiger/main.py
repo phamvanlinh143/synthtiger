@@ -50,6 +50,7 @@ def parse_args():
         metavar="DIR",
         type=str,
         help="Directory path to save data.",
+        default="eng_results"
     )
     parser.add_argument(
         "-c",
@@ -64,7 +65,7 @@ def parse_args():
         "--worker",
         metavar="NUM",
         type=int,
-        default=0,
+        default=4,
         help="Number of workers. If 0, It generates data in the main process. [default: 0]",
     )
     parser.add_argument(
@@ -83,23 +84,26 @@ def parse_args():
         help="Print error messages while generating data.",
     )
     parser.add_argument(
-        "script",
+        "--script",
         metavar="SCRIPT",
         type=str,
         help="Script file path.",
+        default="examples/synthtiger/template.py"
     )
     parser.add_argument(
-        "name",
+        "--name",
         metavar="NAME",
         type=str,
         help="Template class name.",
+        default="SynthTiger"
     )
     parser.add_argument(
-        "config",
+        "--config",
         metavar="CONFIG",
         type=str,
-        nargs="?",
+        # nargs="?",
         help="Config file path.",
+        default="examples/synthtiger/config_horizontal_eng.yaml"
     )
     args = parser.parse_args()
 

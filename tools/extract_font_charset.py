@@ -103,6 +103,7 @@ def write_charset(path, charset):
     with open(path, "w", encoding="utf-8") as fp:
         for char in charset:
             fp.write(char)
+            # fp.write(f"{char}\n")
 
 
 def run(args):

@@ -32,7 +32,7 @@ class SynthTiger(templates.Template):
     def __init__(self, config=None):
         if config is None:
             config = {}
-
+        self.sample_per_chunk = 5000
         self.coord_output = config.get("coord_output", True)
         self.mask_output = config.get("mask_output", True)
         self.glyph_coord_output = config.get("glyph_coord_output", True)
@@ -95,7 +95,7 @@ class SynthTiger(templates.Template):
         )
         self.fit = components.Fit()
         self.pad = components.Switch(components.Pad(), **config.get("pad", {}))
-        self.postprocess = components.Iterator(
+        self.postprocess = components.Selector(
             [
                 components.Switch(components.AdditiveGaussianNoise()),
                 components.Switch(components.GaussianBlur()),
@@ -149,6 +149,13 @@ class SynthTiger(templates.Template):
             self.coords_file = open(coords_path, "w", encoding="utf-8")
         if self.glyph_coord_output:
             self.glyph_coords_file = open(glyph_coords_path, "w", encoding="utf-8")
+    
+    @staticmethod
+    def write_file(content, output_path):
+        with open(output_path, mode='w', encoding='utf-8') as f:
+            f.write(content)
+            f.close()
+        return True
 
     def save(self, root, data, idx):
         image = data["image"]
@@ -170,11 +177,13 @@ class SynthTiger(templates.Template):
             [",".join(map(str, map(int, coord))) for coord in glyph_coords]
         )
 
-        shard = str(idx // 10000)
+        shard = str(idx // self.sample_per_chunk)
         image_key = os.path.join("images", shard, f"{idx}.jpg")
+        text_key = os.path.join("images", shard, f"{idx}.txt")
         mask_key = os.path.join("masks", shard, f"{idx}.png")
         glyph_mask_key = os.path.join("glyph_masks", shard, f"{idx}.png")
         image_path = os.path.join(root, image_key)
+        text_path = os.path.join(root, text_key)
         mask_path = os.path.join(root, mask_key)
         glyph_mask_path = os.path.join(root, glyph_mask_key)
 
@@ -188,6 +197,7 @@ class SynthTiger(templates.Template):
             glyph_mask.save(glyph_mask_path)
 
         self.gt_file.write(f"{image_key}\t{label}\n")
+        self.write_file(label, text_path)
         if self.coord_output:
             self.coords_file.write(f"{image_key}\t{coords}\n")
         if self.glyph_coord_output:
@@ -215,13 +225,13 @@ class SynthTiger(templates.Template):
 
     def _generate_text(self, color, style):
         label = self.corpus.data(self.corpus.sample())
-
+        # print(label)
         # for script using diacritic, ligature and RTL
         chars = utils.split_text(label, reorder=True)
 
         text = "".join(chars)
         font = self.font.sample({"text": text, "vertical": self.vertical})
-
+        # print(font)
         char_layers = [layers.TextLayer(char, **font) for char in chars]
         self.shape.apply(char_layers)
         self.layout.apply(char_layers, {"meta": {"vertical": self.vertical}})

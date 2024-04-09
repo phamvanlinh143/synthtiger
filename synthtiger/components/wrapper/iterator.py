@@ -34,7 +34,7 @@ class Iterator(Component):
     def apply(self, layers, meta=None):
         meta = self.sample(meta)
         sub_metas = meta["metas"]
-
+        flag = False
         for idx, component in enumerate(self.components):
             component.apply(layers, sub_metas[idx])
 

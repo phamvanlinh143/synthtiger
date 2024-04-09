@@ -141,5 +141,8 @@ class BaseCorpus(Component):
             text = text.upper()
         if textcase == "capitalize":
             text = text.capitalize()
+        if textcase == "original":
+            text = text
+
 
         return text

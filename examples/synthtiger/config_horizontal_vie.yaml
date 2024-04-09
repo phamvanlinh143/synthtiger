@@ -1,0 +1,171 @@
+coord_output: false
+mask_output: false
+glyph_coord_output: false
+glyph_mask_output: false
+
+vertical: false
+quality: [88, 99]
+visibility_check: true
+
+midground: 0.125
+midground_offset:
+  percents: [[-0.5, 0.5], [-0.5, 0.5]]
+foreground_mask_pad: 100
+
+corpus:
+  weights: [1, 0]
+  args:
+    # length augmentable corpus
+    - paths: [
+        corpus_vi_valid_chunks.txt, 
+        corpus_vi_valid_short.txt
+      ]
+      weights: [1, 2]
+      min_length: 1
+      max_length: 160
+      textcase: [original] #[lower, upper, capitalize, original]
+      augmentation: 0
+      augmentation_length: [1, 160]
+    # char augmentable corpus
+    - paths: []
+      weights: []
+      min_length: 1
+      max_length: 100
+      textcase: [original] #[lower, upper, capitalize, original]
+      augmentation: 0
+      augmentation_charset: /resources/fonts/vie/times.txt
+
+font:
+  paths: [resources/fonts/vie]
+  weights: [1]
+  size: [22, 50]
+  bold: 0.0
+
+texture:
+  prob: 1.0
+  args:
+    paths: [resources/backgrounds]
+    weights: [1]
+    alpha: [0.5, 1]
+    grayscale: 0
+    crop: 1
+
+colormap2:
+  paths: [resources/colormap/real_colormaps.txt]
+  weights: [1]
+  k: 2
+  alpha: [1, 1]
+  colorize: 1
+
+colormap3:
+  paths: [resources/colormap/real_colormaps.txt]
+  weights: [1]
+  k: 3
+  alpha: [1, 1]
+  colorize: 1
+
+color:
+  gray: [0, 255]
+  alpha: [1, 1]
+  colorize: 1
+
+shape:
+  prob: 0.0
+  args:
+    weights: [1, 1]
+    args:
+      # elastic distortion
+      - alpha: [15, 30]
+        sigma: [4, 12]
+      # elastic distortion
+      - alpha: [0, 2]
+        sigma: [0, 0.6]
+
+layout:
+  weights: [1, 0]
+  args:
+    # flow layout
+    - space: [0, 0]
+      line_align: [middle]
+    # curve layout
+    - curve: [4, 8]
+      space: [-2, 2]
+      convex: 0.25
+      upward: 0.25
+
+style:
+  prob: 0.0
+  args:
+    weights: [1, 2, 2]
+    args:
+      # text border
+      - size: [1, 12]
+        alpha: [1, 1]
+        grayscale: 0
+      # text shadow
+      - distance: [1, 6]
+        angle: [0, 360]
+        alpha: [0.3, 0.7]
+        grayscale: 0
+      # text extrusion
+      - length: [1, 12]
+        angle: [0, 360]
+        alpha: [1, 1]
+        grayscale: 0
+
+transform:
+  prob: 0.025
+  args:
+    weights: [1, 1, 1, 1, 0, 0, 2]
+    args:
+      # perspective x
+      - percents: [[0.5, 1], [1, 1]]
+        aligns: [[0, 0], [0, 0]]
+      # perspective y
+      - percents: [[1, 1], [0.5, 1]]
+        aligns: [[0, 0], [0, 0]]
+      # trapezoidate x
+      - weights: [1, 0, 1, 0]
+        percent: [0.75, 1]
+        align: [-1, 1]
+      # trapezoidate y
+      - weights: [0, 1, 0, 1]
+        percent: [0.5, 1]
+        align: [-1, 1]
+      # skew x
+      - weights: [1, 0]
+        angle: [0, 10]
+        ccw: 0.5
+      # skew y
+      - weights: [0, 1]
+        angle: [0, 5]
+        ccw: 0.5
+      # rotate
+      - angle: [0, 5]
+        ccw: 0.5
+
+pad:
+  prob: 0.9
+  args:
+    pxs: [[5, 12], [4, 12], [5, 12], [4, 12]]
+
+postprocess:
+  weights: [2, 3, 1, 1]
+  args:
+    # gaussian noise
+    - prob: 0.6
+      args:
+        scale: [4, 8]
+        per_channel: 0
+    # gaussian blur
+    - prob: 0.6
+      args:
+        sigma: [0, 2]
+    # resample
+    - prob: 0.25
+      args:
+        size: [1.0, 1.2]
+    # median blur
+    - prob: 0.2
+      args:
+        k: [1, 1]
